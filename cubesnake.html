@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Play Cube Snake</title>
+	<style>
+
+		body {
+			background: yellow;
+
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+
+    font-size: 20px
+			
+		}
+img {
+	border: 6px solid #DF0101;
+	transition: 0.4s  
+}
+
+img:hover {
+
+border: 5px solid #013ADF;
+		box-shadow: 15px 15px 15px lightblue;
+        
+
+}
+
+#TawheedGameScore{
+  display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+		.head {
+		
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		}
+
+		.placeofcanvas {
+
+			display: flex;
+		justify-content: center;
+		align-items: center;
+		
+		}
+
+        canvas {
+        	border: 10px solid #2E9AFE;
+
+          background-color: white;
+        }
+
+        .upbutton {
+        display: flex;
+		justify-content: center;
+		align-items: center;
+        }
+
+           .sidebuttons {
+        display: flex;
+    justify-content: center;
+    align-items: center;
+        }
+
+           .downbutton {
+        display: flex;
+    justify-content: center;
+    align-items: center;
+        }
+       
+       button {
+       	transition: 0.4s;
+       	margin: 10px
+
+       }
+
+       .up
+       {
+       	border: 5px solid #013ADF;
+       }
+
+       .down
+       {
+       		border: 5px solid #013ADF;
+       }
+
+         .right
+       {
+       		border: 5px solid #013ADF;
+       }
+
+          .left
+       {
+       		border: 5px solid #013ADF;
+       }
+
+       .up:hover{
+
+       	background-color: #848484;
+       	border: 8px solid #013ADF;
+
+       }
+
+       .down:hover{
+
+       		background-color: #848484;
+       	border: 8px solid #013ADF;
+
+       }
+
+       .right:hover{
+
+       		background-color: #848484;
+       	border: 8px solid #013ADF;
+       }
+
+       .left:hover{
+
+       			background-color: #848484;
+       	border: 8px solid #013ADF;
+       }
+
+
+	</style>
+</head>
+<body>
+	<div  class = "head">
+		
+<img src = "Title Image.png" class = "titleimage" height = "130" width = "240">  
+
+	</div>
+	<text> <br>   </text>
+
+    <div id = "TawheedGameScore">
+    <p id = "score">Score:</p>
+</div>
+
+	<div class = "placeofcanvas">
+<canvas width="500" height="500" id="game"></canvas>
+
+
+	</div>
+ 
+
+
+
+<div class = "upbutton">
+
+
+
+
+		<button id = "up" type = "button" onclick=  "moveUp()" class = "up">
+
+			<b> <font face = "calibri"> Up </font> <b>
+
+		</button>
+</div>
+<div class = "sidebuttons">
+	<button id = "left" type = "button" onclick=  "moveLeft()" class = "left">
+
+			<b> <font face = "calibri"> left </font> </b>
+
+		</button>
+
+	     <button id = "right" type = "button" onclick=  "moveRight()" class = "right">
+
+      <b> <font face = "calibri"> right </font> </b>
+
+
+    </button>
+
+  </div>
+  <div class = "downbutton">
+
+		<button id = "down" type = "button" onclick=  "moveDown()" class = "down">
+
+			<b> <font face = "calibri"> Down </font> </b>
+
+		</button>
+
+		  
+
+	</div>
+
+  <script>
+var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
+var grid = 16;
+var count = 0;
+  
+var snake = {
+  x: 160,
+  y: 160,
+  
+
+  dx: grid,
+  dy: 0,
+  
+
+  cells: [],
+  
+ 
+  maxCells: 4
+};
+var apple = {
+  x: 320,
+  y: 320
+};
+
+let score = 0;
+
+
+
+
+function getRandomInt(min, max) { //over here we are getting random integers so that the apple can randomly respawn on a spot on the canvas after it has been eaten by snake
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function loop() {
+  requestAnimationFrame(loop);
+
+  if (++count < 4) {
+    return;
+  }
+  count = 0;
+  context.clearRect(0,0,canvas.width,canvas.height);
+
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+
+  if (snake.x < 0) {
+    snake.x = canvas.width - grid;
+  }
+  else if (snake.x >= canvas.width) {
+    snake.x = 0;
+  }
+  
+  if (snake.y < 0) {
+    snake.y = canvas.height - grid;
+  }
+  else if (snake.y >= canvas.height) {
+    snake.y = 0;
+  }
+
+  snake.cells.unshift({x: snake.x, y: snake.y});
+
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+
+  // drawing apple and snake
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+  context.fillStyle = 'blue';
+  snake.cells.forEach(function(cell, index) {
+
+    context.fillRect(cell.x, cell.y, grid-1, grid-1);  
+
+    //below is what happens when the snake eats the apple, basically when the snake goes through the apple
+ 
+    if (cell.x === apple.x && cell.y === apple.y) {
+
+    //snake adds by 1 box
+
+      snake.maxCells++;
+
+//Adding to the score of the snake game
+       score++;
+
+       document.getElementById ("score") .innerHTML = "Score:" + score;
+ 
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+      
+
+    }
+
+// below is what will happen when the snake comes into contact with its own cell/box, basically eats itself :)
+    for (var i = index + 1; i < snake.cells.length; i++) {
+      
+   
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        snake.x = 160;
+        snake.y = 160;
+        snake.cells = [];
+        snake.maxCells = 4;
+        snake.dx = grid;
+        snake.dy = 0;
+        apple.x = getRandomInt(0, 25) * grid;
+        apple.y = getRandomInt(0, 25) * grid;
+
+
+           document.getElementById ("score") .innerHTML = "Score: 0";
+
+           //reseting the score variable when a snake comes into contact with its own cell/box, basically eats itself :)
+
+           score = 0
+
+
+    
+
+      }
+    }
+  });
+}
+
+document.addEventListener('keydown', function(e) {
+
+  //Keyboard controls
+
+  if (e.which === 37 && snake.dx === 0) {
+    snake.dx = -grid;
+    snake.dy = 0;
+  }
+  
+  else if (e.which === 38 && snake.dy === 0) {
+    snake.dy = -grid;
+    snake.dx = 0;
+  }
+
+  else if (e.which === 39 && snake.dx === 0) {
+    snake.dx = grid;
+    snake.dy = 0;
+  }
+
+  else if (e.which === 40 && snake.dy === 0) {
+    snake.dy = grid;
+    snake.dx = 0;
+  }
+});
+
+//Button controls for DD 
+
+requestAnimationFrame(loop);
+
+       function moveLeft(){
+        if (snake.dx===0){
+       snake.dx = -grid;
+    snake.dy = 0;
+  }
+    }
+
+
+       function moveRight(){
+        if (snake.dx===0){
+            snake.dx = grid;
+    snake.dy = 0;
+}
+     }
+
+         function moveDown(){
+          if (snake.dy === 0){
+      snake.dy = grid;
+    snake.dx = 0;
+}
+    }
+         function moveUp(){
+          if (snake.dy === 0){
+     snake.dy = -grid;
+    snake.dx = 0;
+}
+    }
+
+
+
+
+  </script>
+
+</body>
+</html>
